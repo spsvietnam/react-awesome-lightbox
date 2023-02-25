@@ -1,7 +1,7 @@
 {
     "name": "spsvn-image-viewer",
-    "version": "1.0.0",
-    "description": "lightbox image viewer for react with zoom, rotate. Single or multi image mode and touch support",
+    "version": "1.0.3",
+    "description": "Lightbox image viewer for react with zoom, rotate. Single or multi image mode and touch support",
     "keywords": [
         "react",
         "image viewer",

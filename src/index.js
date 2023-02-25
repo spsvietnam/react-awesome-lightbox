@@ -173,6 +173,13 @@ export default class Lightbox extends React.Component {
                 break;
         }
     }
+    handleDownload() {
+        let image = this.getCurrentImage(this.state,this.props);
+        let {onDownload, allowDownload} = this.props;
+        if(image && onDownload && allowDownload){
+            onDownload(image)
+        }
+    }
     componentDidMount(){
         document.body.classList.add("lb-open-lightbox");
         let {keyboardInteraction = true} = this.props;
@@ -193,9 +200,19 @@ export default class Lightbox extends React.Component {
         let {
             allowZoom   = true,
             allowRotate = true,
+            allowDownload = true,
             buttonAlign = "flex-end",
             showTitle   = true,
-            allowReset  = true
+            allowReset  = true,
+            resetButton = null,
+            previousButton = null,
+            nextButton = null,
+            zoomInButton = null,
+            zoomOutButton = null,
+            downloadButton = null,
+            closeButton = null,
+            rotateClockButton = null,
+            rotateCounterClockButton = null
         } = this.props;
         let {x, y, zoom, rotate, multi, loading, moving} = this.state;
         let _reset = allowReset && this.shouldShowReset();
@@ -214,24 +231,61 @@ export default class Lightbox extends React.Component {
                     <Cond condition={buttonAlign === "center" || _reset}>
                         <div title="Reset" 
                         style={{order : buttonAlign === "flex-start"?"1":"unset"}} 
-                        className={`lb-button lb-icon-reset lb-hide-mobile reload ${_reset?"":"lb-disabled"}`}
-                        onClick={this.reset}></div>
+                        className={`lb-button ${resetButton?"":"lb-icon-reset"} lb-hide-mobile reload ${_reset?"":"lb-disabled"}`}
+                        onClick={this.reset}>
+                            <Cond condition={resetButton}>
+                                {resetButton}
+                            </Cond>
+                        </div>
                     </Cond>
                     <Cond condition = {multi}>
-                        <div title="Previous" className="lb-button lb-icon-arrow prev lb-hide-mobile" onClick={e=>this.navigateImage("prev", e)}></div>
-                        <div title="Next" className="lb-button lb-icon-arrow next lb-hide-mobile" onClick={e=>this.navigateImage("next", e)}></div>
+                        <div title="Previous" className={`lb-button ${previousButton?"":"lb-icon-arrow prev"} previous-button lb-hide-mobile`} onClick={e=>this.navigateImage("prev", e)}>
+                            <Cond condition={previousButton}>
+                                {previousButton}
+                            </Cond>
+                        </div>
+                        <div title="Next" className={`lb-button ${nextButton?"":"lb-icon-arrow next"} next-button lb-hide-mobile`} onClick={e=>this.navigateImage("next", e)}>
+                            <Cond condition={nextButton}>
+                                {nextButton}
+                            </Cond>
+                        </div>
                     </Cond>
                     <Cond condition = {allowZoom}>
-                        <div title="Zoom In" className="lb-button lb-icon-zoomin zoomin" onClick={()=>this.applyZoom("in")}></div>
+                        <div title="Zoom In" className={`lb-button ${zoomInButton?"":"lb-icon-zoomin"} zoomin`} onClick={()=>this.applyZoom("in")}>
+                            <Cond condition={zoomInButton}>
+                                {zoomInButton}
+                            </Cond>
+                        </div>
                         <div title="Zoom Out" 
-                        className={`lb-button lb-icon-zoomout zoomout ${zoom<=1?"lb-disabled":""}`}
-                        onClick={()=>this.applyZoom("out")}></div>
+                        className={`lb-button ${zoomOutButton?"":"lb-icon-zoomout"} zoomout ${zoom<=1?"lb-disabled":""}`}
+                        onClick={()=>this.applyZoom("out")}>
+                            <Cond condition={zoomOutButton}>
+                                {zoomOutButton}
+                            </Cond>
+                        </div>
                     </Cond>
                     <Cond condition = {allowRotate}>
-                        <div title="Rotate left" className="lb-button lb-icon-rotate rotatel" onClick={()=>this.applyRotate("acw")}></div>
-                        <div title="Rotate right" className="lb-button lb-icon-rotate rotater" onClick={()=>this.applyRotate("cw")}></div>
+                        <div title="Rotate left" className={`lb-button ${rotateCounterClockButton?"":"lb-icon-rotate"} rotatel`} onClick={()=>this.applyRotate("acw")}>
+                            <Cond condition={rotateCounterClockButton}>
+                                {rotateCounterClockButton}
+                            </Cond>
+                        </div>
+                        <div title="Rotate right" className={`lb-button ${rotateClockButton?"":"lb-icon-rotate"} rotater`} onClick={()=>this.applyRotate("cw")}>
+                            <Cond condition={rotateClockButton}>
+                                {rotateClockButton}
+                            </Cond>
+                        </div>
                     </Cond>
-                    <div title="Close" className="lb-button lb-icon-close close" style={{order: buttonAlign === "flex-start"?"-1":"unset"}} onClick={e=>this.exit(e)}></div>
+                    <Cond condition = {allowDownload}>
+                        <div title="Download" className={`lb-button download-button`} onClick={()=>this.handleDownload()}>
+                            {downloadButton}
+                        </div>
+                    </Cond>
+                    <div title="Close" className={`lb-button ${closeButton?"":"lb-icon-close"} close`} style={{order: buttonAlign === "flex-start"?"-1":"unset"}} onClick={e=>this.exit(e)}>
+                        <Cond condition={closeButton}>
+                            {closeButton}
+                        </Cond>
+                    </div>
                 </div>
                 <div 
                 className={`lb-canvas${loading?" lb-loading":""}`}
